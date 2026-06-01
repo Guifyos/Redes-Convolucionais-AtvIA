@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Classificador de Veículos</title>
+    <style>
+      body { font-family: system-ui; max-width: 600px; margin: 40px auto; padding: 20px; text-align: center; }
+      .box { border: 2px dashed #ccc; padding: 30px; margin-bottom: 20px; }
+      button { padding: 10px 20px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; }
+    </style>
+  </head>
+  <body>
+    <h1>Classificador CNN</h1>
+    <p>Treinado para identificar: Moto, Bicicleta ou Carro.</p>
+    
+    <div class="box">
+      <h3>Envie a imagem de teste</h3>
+      <input type="file" id="imageInput" accept="image/*">
+      <br><br>
+      <button onclick="enviarImagem()">Classificar Imagem</button>
+    </div>
+
+    <h2 id="resultado"></h2>
+
+    <script>
+      async function enviarImagem() {
+        const input = document.getElementById('imageInput');
+        const resultadoText = document.getElementById('resultado');
+        
+        if (input.files.length === 0) {
+          alert("Selecione uma imagem primeiro!");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", input.files[0]);
+
+        resultadoText.innerText = "Analisando...";
+
+        try {
+          const response = await fetch("http://127.0.0.1:8000/upload/", {
+            method: "POST",
+            body: formData
+          });
+          const data = await response.json();
+          resultadoText.innerText = `Resultado: É um(a) ${data.classificacao}!`;
+        } catch (error) {
+          resultadoText.innerText = "Erro ao conectar com a API Python.";
+          console.error(error);
+        }
+      }
+    </script>
+  </body>
+</html>
